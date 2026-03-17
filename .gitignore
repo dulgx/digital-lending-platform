@@ -1,0 +1,61 @@
+# ========================
+# Python / FastAPI backend
+# ========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables (NEVER commit secrets!)
+.env
+
+# SQLite local DB file
+*.db
+*.sqlite3
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Pytest cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MyPy
+.mypy_cache/
+
+# ========================
+# Node / Next.js frontend
+# ========================
+node_modules/
+.next/
+out/
+.turbo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ========================
+# OS & editors
+# ========================
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ========================
+# Misc
+# ========================
+*.log
