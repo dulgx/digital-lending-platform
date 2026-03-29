@@ -12,6 +12,9 @@ class RepaymentResponse(BaseModel):
     installment_number: int
     due_date: date
     amount: Decimal
+    principal_payment: Decimal
+    interest_payment: Decimal
+    balance_remaining: Decimal
     status: RepaymentStatus
     paid_at: datetime | None
 

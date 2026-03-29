@@ -52,23 +52,40 @@ def generate_repayment_schedule(
     principal: Decimal,
     term_months: int,
     monthly_payment: Decimal,
+    monthly_rate: Decimal | None = None,
     start_date: date | None = None,
 ) -> list[dict]:
     """
-    Returns a list of repayment installment dicts ready to insert into DB.
+    Returns a list of repayment installment dicts with amortization breakdown.
+    Each installment includes principal_payment, interest_payment, and balance_remaining.
     """
     if start_date is None:
         start_date = date.today()
+    if monthly_rate is None:
+        monthly_rate = DEFAULT_MONTHLY_INTEREST_RATE
 
     schedule = []
+    balance = principal
     for i in range(1, term_months + 1):
         due = start_date + relativedelta(months=i)
+        interest = (balance * monthly_rate).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        # On the last installment, pay the exact remaining balance to avoid rounding drift
+        if i == term_months:
+            principal_part = balance
+            total = (principal_part + interest).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        else:
+            principal_part = (monthly_payment - interest).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            total = monthly_payment
+        balance = (balance - principal_part).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
         schedule.append(
             {
                 "loan_id": loan_id,
                 "installment_number": i,
                 "due_date": due,
-                "amount": monthly_payment,
+                "amount": total,
+                "principal_payment": principal_part,
+                "interest_payment": interest,
+                "balance_remaining": max(balance, Decimal("0.00")),
                 "status": "pending",
             }
         )

@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.models.loan_application import ApplicationStatus
 from app.models.loan import LoanStatus
@@ -10,8 +10,8 @@ from app.models.loan import LoanStatus
 # --- Loan Application ---
 
 class LoanApplyRequest(BaseModel):
-    amount: Decimal
-    term_months: int
+    amount: Decimal = Field(gt=0, le=50_000_000, description="Зээлийн дүн (1–50,000,000)")
+    term_months: int = Field(ge=1, le=60, description="Зээлийн хугацаа сараар (1–60)")
 
 
 class LoanApplicationResponse(BaseModel):

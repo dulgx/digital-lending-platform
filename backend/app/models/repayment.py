@@ -22,6 +22,9 @@ class Repayment(Base):
     installment_number = Column(Integer, nullable=False)  # 1..n
     due_date = Column(Date, nullable=False)
     amount = Column(Numeric(15, 2), nullable=False)
+    principal_payment = Column(Numeric(15, 2), nullable=False, default=0)
+    interest_payment = Column(Numeric(15, 2), nullable=False, default=0)
+    balance_remaining = Column(Numeric(15, 2), nullable=False, default=0)
     paid_at = Column(DateTime, nullable=True)
 
     status = Column(Enum(RepaymentStatus), default=RepaymentStatus.PENDING, nullable=False)

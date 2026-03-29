@@ -13,6 +13,9 @@ class LoanRepository:
     def get_loan_by_id(self, loan_id: int):
         return self.db.get(Loan, loan_id)
 
+    def get_loan_by_application_id(self, application_id: int):
+        return self.db.query(Loan).filter(Loan.application_id == application_id).first()
+
     def get_repayments_by_loan(self, loan_id: int):
         return self.db.query(Repayment).filter(Repayment.loan_id == loan_id).order_by(Repayment.installment_number).all()
 

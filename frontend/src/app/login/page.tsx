@@ -16,7 +16,6 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const data = await fetchApi("/auth/login", {
         method: "POST",
@@ -32,70 +31,73 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 relative overflow-hidden">
-      {/* Background Orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-50 animate-blob"></div>
-      <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-50 animate-blob animation-delay-2000"></div>
-      <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-50 animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-purple-200 flex flex-col items-center justify-center relative overflow-hidden px-4">
+      {/* Background blobs */}
+      <div className="absolute top-0 right-0 w-72 h-72 bg-pink-300/30 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-purple-300/30 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-md p-8 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Тавтай морил
-          </h1>
-          <p className="text-slate-400 mt-2">Дижитал зээлийн платформд нэвтрэх</p>
+      <div className="relative z-10 w-full max-w-sm">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="w-16 h-16 bg-gray-900 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-lg">
+            <span className="text-white text-2xl font-black">Z</span>
+          </div>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Тавтай морил</h1>
+          <p className="text-gray-500 mt-2 font-medium">Дансандаа нэвтэрнэ үү</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          {error && (
-            <div className="p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-400 text-sm">
-              {error}
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Имэйл хаяг</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-              placeholder="name@example.com"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Нууц үг</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium shadow-lg shadow-purple-500/25 transition-all duration-300 transform hover:-translate-y-1 active:scale-95 flex justify-center items-center"
-          >
-            {loading ? (
-              <div className="w-6 h-6 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
-            ) : (
-              "Нэвтрэх"
+        <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/60 p-7">
+          <form onSubmit={handleLogin} className="space-y-5">
+            {error && (
+              <div className="p-3.5 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
+                {error}
+              </div>
             )}
-          </button>
 
-          <p className="text-center text-slate-400 text-sm">
-            Бүртгэлгүй юу?{" "}
-            <Link href="/register" className="text-blue-400 hover:text-blue-300 transition-colors">
-              Бүртгүүлэх
-            </Link>
-          </p>
-        </form>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Имэйл хаяг</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all text-sm font-medium"
+                placeholder="name@example.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Нууц үг</label>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all text-sm font-medium"
+                placeholder="••••••••"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 rounded-full bg-gray-900 hover:bg-gray-700 text-white font-bold text-base transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 flex justify-center items-center mt-2"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                "Нэвтрэх"
+              )}
+            </button>
+          </form>
+        </div>
+
+        <p className="text-center text-gray-500 text-sm mt-6 font-medium">
+          Бүртгэлгүй юу?{" "}
+          <Link href="/register" className="text-gray-900 font-bold hover:underline">
+            Бүртгүүлэх
+          </Link>
+        </p>
       </div>
     </div>
   );

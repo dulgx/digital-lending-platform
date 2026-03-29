@@ -5,11 +5,11 @@ from app.models.loan_application import LoanApplication, ApplicationStatus
 from app.models.loan import Loan
 from app.schemas.loan import LoanApplyRequest
 from app.services.scoring import calculate_score
+from app.models.repayment import RepaymentStatus
 from app.services.decision import (
     get_decision,
     calculate_monthly_payment,
     generate_repayment_schedule,
-    DEFAULT_MONTHLY_INTEREST_RATE,
 )
 from app.repositories.loan_repository import LoanRepository
 
@@ -58,10 +58,11 @@ class LoanService:
                 monthly_payment=monthly_payment,
             )
             schedule = generate_repayment_schedule(
-                loan_id=0, # will be updated in repo
+                loan_id=0,  # will be updated in repo
                 principal=Decimal(str(body.amount)),
                 term_months=body.term_months,
                 monthly_payment=monthly_payment,
+                monthly_rate=result.interest_rate,
             )
 
         return self.loan_repo.save_application_flow(application, loan, schedule)
@@ -96,7 +97,7 @@ class LoanService:
         if not loan or loan.user_id != current_user.id:
             raise HTTPException(status_code=403, detail="Not your repayment")
             
-        if repayment.status == "paid":
+        if repayment.status == RepaymentStatus.PAID:
             raise HTTPException(status_code=400, detail="Already paid")
             
         return self.loan_repo.mark_repayment_paid(repayment)

@@ -4,129 +4,235 @@ import { useEffect, useState } from "react";
 import { fetchApi } from "@/lib/api";
 import Link from "next/link";
 
+const STATUS_MAP: Record<string, { label: string; cls: string }> = {
+  APPROVED: { label: "Батлагдсан", cls: "bg-green-100 text-green-700" },
+  REJECTED: { label: "Татгалзсан", cls: "bg-red-100 text-red-600" },
+  REVIEW:   { label: "Шалгагдаж буй", cls: "bg-amber-100 text-amber-700" },
+  PENDING:  { label: "Хүлээгдэж буй", cls: "bg-blue-100 text-blue-700" },
+};
+
+const ICON_COLORS = [
+  "bg-[#C8F5F0]",
+  "bg-[#DAFADE]",
+  "bg-[#F5E642]/60",
+  "bg-[#FFE0CC]",
+  "bg-[#E8D5FB]",
+];
+
+function StatusBadge({ status }: { status: string }) {
+  const s = STATUS_MAP[status?.toUpperCase()] ?? STATUS_MAP.PENDING;
+  return (
+    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${s.cls}`}>
+      {s.label}
+    </span>
+  );
+}
+
 export default function DashboardPage() {
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
+    fetchApi("/loan/applications")
+      .then((data: any) => {
+        const sorted = (data || []).sort((a: any, b: any) => b.id - a.id);
+        setApplications(sorted);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
-  const loadData = async () => {
-    try {
-      const data = await fetchApi("/loan/applications");
-      // Sort newest first
-      const sorted = (data || []).sort((a: any, b: any) => b.id - a.id);
-      setApplications(sorted);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const StatusBadge = ({ status }: { status: string }) => {
-    const colors = {
-      APPROVED: "bg-teal-500/10 text-teal-400 border-teal-500/20",
-      REJECTED: "bg-red-500/10 text-red-400 border-red-500/20",
-      REVIEW: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-      PENDING: "bg-blue-500/10 text-blue-400 border-blue-500/20"
-    };
-    
-    // @ts-ignore
-    const colorClass = colors[status?.toUpperCase()] || colors.PENDING;
-    const labels: any = { APPROVED: "Батлагдсан", REJECTED: "Татгалзсан", REVIEW: "Шалгагдаж буй" };
-    
-    return (
-      <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${colorClass}`}>
-        {labels[status?.toUpperCase()] || status}
-      </span>
-    );
-  };
+  const totalAmount = applications.reduce((s, a) => s + Number(a.amount || 0), 0);
+  const approvedApps = applications.filter((a) => a.status?.toUpperCase() === "APPROVED");
+  const pendingApps = applications.filter(
+    (a) => a.status?.toUpperCase() === "PENDING" || a.status?.toUpperCase() === "REVIEW"
+  );
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-6 animate-[slideUp_0.4s_ease-out]">
+
+      {/* ── Header ── */}
+      <header className="flex items-center justify-between pt-2">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Таны зээлүүд</h1>
-          <p className="text-slate-400 mt-1">Зээлийн түүх болон эргэн төлөлтөө хянах</p>
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Wallet</h1>
+          <p className="text-gray-400 text-xs font-medium">Сайн байна уу</p>
         </div>
-        <Link 
-          href="/dashboard/apply" 
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-medium shadow-lg shadow-purple-500/25 transition-all duration-300 transform hover:-translate-y-0.5"
-        >
-          Шинээр зээл хүсэх
-        </Link>
+        <div className="w-11 h-11 rounded-full bg-amber-200 flex items-center justify-center">
+          <span className="text-amber-800 font-black text-lg">М</span>
+        </div>
       </header>
 
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="w-10 h-10 border-4 border-slate-700 border-t-blue-500 rounded-full animate-spin"></div>
+      {/* ── Balance Card (Yellow) ── */}
+      <div className="bg-[#EDD633] rounded-[28px] p-6 relative overflow-hidden">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-black rounded-full flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            </div>
+            <span className="font-black text-black text-base tracking-wide">ЗЭЭЛ</span>
+          </div>
+          <span className="text-black/50 font-semibold text-sm">03/26</span>
         </div>
-      ) : applications.length === 0 ? (
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-12 text-center backdrop-blur-xl">
-          <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+
+        <p className="text-black/60 text-sm font-medium mb-1">Нийт зээлийн дүн</p>
+        <p className="text-4xl font-black text-black tracking-tight">
+          ₮{totalAmount.toLocaleString()}
+        </p>
+
+        <div className="flex items-end justify-between mt-5">
+          <div>
+            <p className="text-black/50 text-xs mb-0.5">Нэр</p>
+            <p className="font-black text-black text-sm">Миний данс</p>
+          </div>
+          <div className="text-right">
+            <p className="text-black/50 text-xs mb-0.5">Нийт зээл</p>
+            <p className="font-black text-black text-sm">{applications.length} хүсэлт</p>
+          </div>
+        </div>
+
+        {/* Decorative circle */}
+        <div className="absolute -right-10 -top-10 w-40 h-40 bg-black/5 rounded-full" />
+        <div className="absolute -right-4 -top-4 w-24 h-24 bg-black/5 rounded-full" />
+      </div>
+
+      {/* ── Quick Actions ── */}
+      <div className="flex items-center justify-between px-2">
+        <Link href="/dashboard/apply" className="flex flex-col items-center gap-2">
+          <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center shadow-md">
+            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-white mb-2">Зээлийн түүх хоосон байна</h2>
-          <p className="text-slate-400 max-w-sm mx-auto mb-8">
-            Та зээл хараахан аваагүй байна. Дараах товчийг дарж зээлийн хүсэлтээ хялбархан илгээгээрэй.
-          </p>
-          <Link href="/dashboard/apply" className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors font-medium">
-            Хүсэлт илгээх
-          </Link>
+          <span className="text-xs font-semibold text-gray-500">Хүсэлт</span>
+        </Link>
+
+        <button className="flex flex-col items-center gap-2">
+          <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+            <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+          </div>
+          <span className="text-xs font-semibold text-gray-500">Шилжүүлэх</span>
+        </button>
+
+        <button className="flex flex-col items-center gap-2">
+          <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+            <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+          </div>
+          <span className="text-xs font-semibold text-gray-500">Илгээх</span>
+        </button>
+
+        <button className="flex flex-col items-center gap-2">
+          <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+            <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+          </div>
+          <span className="text-xs font-semibold text-gray-500">Дэлгэрэнгүй</span>
+        </button>
+      </div>
+
+      {/* ── Spending by Category ── */}
+      <div>
+        <h2 className="text-base font-black text-gray-900 mb-3">Зээлийн ангилал</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {/* Teal card */}
+          <div className="bg-[#C8F5F0] rounded-[24px] p-4 relative overflow-hidden">
+            <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center mb-8">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <p className="text-sm font-semibold text-gray-600">Батлагдсан</p>
+            <p className="text-2xl font-black text-gray-900">{approvedApps.length} зээл</p>
+            <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-black/5 rounded-full" />
+          </div>
+
+          {/* Green card */}
+          <div className="bg-[#DAFADE] rounded-[24px] p-4 relative overflow-hidden">
+            <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center mb-8">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-sm font-semibold text-gray-600">Хүлээгдэж буй</p>
+            <p className="text-2xl font-black text-gray-900">{pendingApps.length} зээл</p>
+            <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-black/5 rounded-full" />
+          </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {applications.map((app) => (
-            <div key={app.id} className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl overflow-hidden hover:border-white/20 transition-colors group">
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <p className="text-slate-400 text-xs uppercase tracking-wider mb-1">Хүсэлтийн дугаар</p>
-                    <p className="text-white font-mono font-medium">#{app.id.toString().padStart(6, '0')}</p>
-                  </div>
-                  <StatusBadge status={app.status} />
-                </div>
-                
-                <div className="mb-6">
-                  <p className="text-slate-400 text-xs uppercase tracking-wider mb-1">Зээлийн хэмжээ</p>
-                  <h3 className="text-3xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
-                    {Number(app.amount).toLocaleString()} ₮
-                  </h3>
+      </div>
+
+      {/* ── My Loans ── */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-base font-black text-gray-900">Миний зээлүүд</h2>
+          <button className="text-sm font-semibold text-gray-400">Бүгдийг харах</button>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-10 h-10 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin" />
+          </div>
+        ) : applications.length === 0 ? (
+          <div className="bg-white rounded-[24px] p-10 text-center shadow-sm">
+            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <p className="font-bold text-gray-700 text-base mb-1">Зээл байхгүй байна</p>
+            <p className="text-gray-400 text-sm mb-5">Анхны зээлийн хүсэлтээ илгээгээрэй</p>
+            <Link
+              href="/dashboard/apply"
+              className="inline-flex px-6 py-3 bg-black text-white rounded-full font-bold text-sm hover:bg-gray-800 transition-all"
+            >
+              Хүсэлт илгээх
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {applications.map((app, i) => (
+              <div
+                key={app.id}
+                className="bg-white rounded-[20px] p-4 flex items-center gap-3 shadow-sm"
+              >
+                <div
+                  className={`w-12 h-12 ${ICON_COLORS[i % ICON_COLORS.length]} rounded-2xl flex items-center justify-center flex-shrink-0`}
+                >
+                  <svg className="w-5 h-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-3">
-                    <p className="text-slate-500 text-xs mb-1">Хугацаа</p>
-                    <p className="text-white font-medium">{app.term_months} сар</p>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-3">
-                    <p className="text-slate-500 text-xs mb-1">Кредит оноо</p>
-                    <p className="text-white font-medium">{app.score ?? 'Тооцоогүй'}</p>
-                  </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-gray-900 text-sm truncate mb-1">
+                    {app.purpose || "Дижитал зээл"}
+                  </p>
+                  <StatusBadge status={app.status} />
+                </div>
+
+                <div className="text-right flex-shrink-0">
+                  <p className="font-black text-gray-900 text-sm">
+                    ₮{Number(app.amount).toLocaleString()}
+                  </p>
+                  {app.status?.toUpperCase() === "APPROVED" && (
+                    <Link
+                      href={`/dashboard/loan/${app.id}`}
+                      className="text-xs font-semibold text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      Дэлгэрэнгүй →
+                    </Link>
+                  )}
                 </div>
               </div>
-              
-              {app.status === 'approved' && (
-                <div className="border-t border-white/10 p-4 bg-white/[0.02]">
-                  <Link 
-                    href={`/dashboard/loan/${app.id}`} 
-                    className="w-full flex items-center justify-center gap-2 text-sm font-medium text-blue-400 group-hover:text-blue-300 transition-colors py-2"
-                  >
-                    Эргэн төлөлтийн хуваарь харах
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
