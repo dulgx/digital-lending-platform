@@ -22,13 +22,23 @@ export default function RepaymentSchedulePage() {
 
   const loadSchedule = async () => {
     try {
-      // Assuming application ID matches loan ID strictly for this MVP, else we will see an error.
-      const data = await fetchApi(`/repayment/${id}`);
+      // Assuming application ID matches loan ID strictly for this MVP, we now use the new specific API.
+      const data = await fetchApi(`/repayment/application/${id}`);
       setSchedule(data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePay = async (repaymentId: number) => {
+    if (!confirm("Та энэ сарын төлбөрийг төлөхдөө итгэлтэй байна уу?")) return;
+    try {
+      await fetchApi(`/repayment/${repaymentId}/pay`, { method: "POST" });
+      await loadSchedule(); // Refresh data after payment
+    } catch (err: any) {
+      alert("Төлбөр төлөхөд алдаа гарлаа: " + err.message);
     }
   };
 
@@ -62,7 +72,7 @@ export default function RepaymentSchedulePage() {
                   <th className="py-4 px-6 text-sm font-medium text-slate-400 uppercase tracking-wider">Үндсэн төлбөр</th>
                   <th className="py-4 px-6 text-sm font-medium text-slate-400 uppercase tracking-wider">Хүүгийн төлбөр</th>
                   <th className="py-4 px-6 text-sm font-medium text-slate-400 uppercase tracking-wider">Нийт</th>
-                  <th className="py-4 px-6 text-sm font-medium text-slate-400 uppercase tracking-wider">Төлөв</th>
+                  <th className="py-4 px-6 text-sm font-medium text-slate-400 uppercase tracking-wider min-w-[180px]">Төлөв & Үйлдэл</th>
                 </tr>
               </thead>
               <tbody>
@@ -77,12 +87,20 @@ export default function RepaymentSchedulePage() {
                     <td className="py-4 px-6 font-bold text-white bg-white/5">
                       {(Number(row.principal_payment) + Number(row.interest_payment)).toLocaleString()} ₮
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-6 flex items-center gap-3">
                       <span className={`px-2 py-1 text-xs font-semibold rounded-md border ${
                         row.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' : 'bg-teal-500/10 text-teal-400 border-teal-500/20'
                       }`}>
                         {row.status === 'pending' ? 'Хүлээгдэж буй' : 'Төлөгдсөн'}
                       </span>
+                      {row.status === 'pending' && (
+                        <button
+                          onClick={() => handlePay(row.id)}
+                          className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 hover:text-blue-300 rounded-md text-xs font-medium border border-blue-500/20 transition-colors"
+                        >
+                          Төлөх
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

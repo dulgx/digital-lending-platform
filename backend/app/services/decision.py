@@ -11,11 +11,10 @@ from decimal import Decimal, ROUND_HALF_UP
 
 from app.models.loan_application import ApplicationStatus
 
+APPROVE_THRESHOLD = 60 # C band and above
+REVIEW_THRESHOLD = 50  # D band requires review
 
-APPROVE_THRESHOLD = 70
-REVIEW_THRESHOLD = 50
-
-# Default monthly interest rate (1.5% per month = ~18% p.a.) — override via config later
+# Fallback default interest rate if dynamic is unavailable
 DEFAULT_MONTHLY_INTEREST_RATE = Decimal("0.015")
 
 

@@ -16,6 +16,15 @@ class LoanRepository:
     def get_repayments_by_loan(self, loan_id: int):
         return self.db.query(Repayment).filter(Repayment.loan_id == loan_id).order_by(Repayment.installment_number).all()
 
+    def get_repayment_by_id(self, repayment_id: int) -> Repayment | None:
+        return self.db.get(Repayment, repayment_id)
+
+    def mark_repayment_paid(self, repayment: Repayment):
+        repayment.status = "paid"
+        self.db.commit()
+        self.db.refresh(repayment)
+        return repayment
+
     def save_application_flow(self, application: LoanApplication, loan: Loan | None, schedule: list[dict]):
         self.db.add(application)
         self.db.flush()

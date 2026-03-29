@@ -27,6 +27,7 @@ class LoanService:
         result = calculate_score(
             salary=float(current_user.salary),
             loan_amount=float(body.amount),
+            term_months=body.term_months,
             age=current_user.age,
         )
 
@@ -46,13 +47,13 @@ class LoanService:
         if decision == ApplicationStatus.APPROVED:
             monthly_payment = calculate_monthly_payment(
                 principal=Decimal(str(body.amount)),
-                monthly_rate=DEFAULT_MONTHLY_INTEREST_RATE,
+                monthly_rate=result.interest_rate,
                 term_months=body.term_months,
             )
             loan = Loan(
                 user_id=current_user.id,
                 principal=body.amount,
-                interest_rate=DEFAULT_MONTHLY_INTEREST_RATE,
+                interest_rate=result.interest_rate,
                 term_months=body.term_months,
                 monthly_payment=monthly_payment,
             )
@@ -79,3 +80,23 @@ class LoanService:
         if not loan or loan.user_id != current_user.id:
             raise HTTPException(status_code=404, detail="Loan not found")
         return self.loan_repo.get_repayments_by_loan(loan_id)
+
+    def get_repayment_schedule_by_application(self, application_id: int, current_user: User):
+        loan = self.loan_repo.get_loan_by_application_id(application_id)
+        if not loan or loan.user_id != current_user.id:
+            raise HTTPException(status_code=404, detail="Loan not found")
+        return self.loan_repo.get_repayments_by_loan(loan.id)
+
+    def pay_installment(self, repayment_id: int, current_user: User):
+        repayment = self.loan_repo.get_repayment_by_id(repayment_id)
+        if not repayment:
+            raise HTTPException(status_code=404, detail="Repayment not found")
+        
+        loan = self.loan_repo.get_loan_by_id(repayment.loan_id)
+        if not loan or loan.user_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not your repayment")
+            
+        if repayment.status == "paid":
+            raise HTTPException(status_code=400, detail="Already paid")
+            
+        return self.loan_repo.mark_repayment_paid(repayment)
