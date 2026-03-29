@@ -1,38 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import hash_password, verify_password, create_access_token
-from app.models.user import User
 from app.schemas.auth import RegisterRequest, LoginRequest, TokenResponse, UserResponse
+from app.services.auth_service import AuthService
+from app.repositories.user_repository import UserRepository
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def register(body: RegisterRequest, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.email == body.email).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
+def get_auth_service(db: Session = Depends(get_db)):
+    return AuthService(UserRepository(db))
 
-    user = User(
-        name=body.name,
-        email=body.email,
-        password_hash=hash_password(body.password),
-        salary=body.salary,
-        age=body.age,
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
+
+@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+def register(body: RegisterRequest, auth_service: AuthService = Depends(get_auth_service)):
+    return auth_service.register(body)
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(body: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == body.email).first()
-    if not user or not verify_password(body.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    token = create_access_token({"sub": user.id})
-    return TokenResponse(access_token=token)
+def login(body: LoginRequest, auth_service: AuthService = Depends(get_auth_service)):
+    return auth_service.login(body)
