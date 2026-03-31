@@ -31,7 +31,7 @@ class ScoreResult:
     risk_band: str
     interest_rate: Decimal
 
-def calculate_score(salary: float, loan_amount: float, term_months: int, age: int) -> ScoreResult:
+def calculate_score(salary: float, loan_amount: float, term_months: int, age: int, smart_score_impact: int = 0) -> ScoreResult:
     breakdown: dict[str, int] = {}
 
     if loan_amount <= 0:
@@ -71,7 +71,12 @@ def calculate_score(salary: float, loan_amount: float, term_months: int, age: in
         amount_score = 10
     breakdown["loan_amount_tier"] = amount_score
 
-    total = dti_score + age_score + amount_score
+    # Include smart scoring
+    if smart_score_impact != 0:
+        breakdown["smart_score"] = smart_score_impact
+
+    # Cap total
+    total = min(max(dti_score + age_score + amount_score + smart_score_impact, 0), 100)
     
     # Step 4: Determine Risk Band and Rate
     if total >= 80:

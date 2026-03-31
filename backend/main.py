@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.database import Base, engine
-from app.routers import auth, loan, repayment, admin
+from app.routers import auth, loan, repayment, admin, partner, b2b_loan
 
 # Create all tables on startup (SQLite / dev only)
 Base.metadata.create_all(bind=engine)
@@ -29,6 +29,8 @@ app.include_router(auth.router)
 app.include_router(loan.router)
 app.include_router(repayment.router)
 app.include_router(admin.router)
+app.include_router(partner.router)
+app.include_router(b2b_loan.router)
 
 
 @app.get("/", tags=["Health"])
