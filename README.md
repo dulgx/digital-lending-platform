@@ -13,11 +13,13 @@
 ### 🎯 Гол боломжууд:
 
 * 👤 Хэрэглэгч бүртгэл, нэвтрэлт (JWT authentication)
-* 📝 Зээлийн хүсэлт гаргах
-* 🧠 Автомат кредит оноо (Credit Scoring Engine)
-* ⚖️ Автомат шийдвэр (Approve / Reject)
+* 🔑 B2B API Integrations (API key authentication)
+* 📝 Зээлийн хүсэлт гаргах (Шууд болон B2B)
+* 🧠 Автомат кредит оноо (Credit & Smart Scoring Engine)
+* ⚖️ Автомат шийдвэр (Approve / Reject / Review)
 * 💰 Зээлийн бүртгэл үүсгэх
 * 📆 Эргэн төлөлтийн хуваарь (Repayment Schedule)
+* 🔔 Webhook notifications (B2B application status updates)
 * 🛠️ Admin panel (гар аргаар шийдвэр гаргах боломж)
 
 ---
@@ -127,6 +129,10 @@ digital-lending-platform/
 * `POST /loan/apply`
 * `GET /loan/applications`
 * `GET /loan/:id`
+
+### B2B API
+
+* `POST /b2b/apply` (Requires API Key)
 
 ### Repayment
 

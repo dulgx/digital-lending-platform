@@ -53,15 +53,14 @@ External (optional):
 
 ### 3.4 Credit Scoring Engine (Core)
 
-* Rule-based scoring (MVP)
+* Traditional rule-based scoring + Transaction-based "Smart Scoring"
 * Input:
-
   * salary
   * loan amount
   * age
+  * Open Banking transaction history (for B2B Smart Score)
 * Output:
-
-  * score (0–100)
+  * score (base 0–100 + smart score impact -50 to +50)
   * decision (approve/reject/review)
 
 ---
@@ -105,16 +104,32 @@ External (optional):
 
 ---
 
+### 3.9 B2B API Integration Module
+
+* Dedicated API Key authentication for partners
+* Proxy loan applications on behalf of customers
+* Synchronous smart scoring & immediate response
+
+---
+
+### 3.10 Webhook Service
+
+* Asynchronous event dispatching (via BackgroundTasks)
+* Notifies B2B partners on crucial events like `loan.status.updated`
+
+---
+
 ## 4. Data Flow
 
-1. User registers and logs in
-2. User submits loan application
-3. Backend triggers scoring engine
-4. Scoring engine returns score
+1. User registers and logs in (or Partner authenticates via API Key)
+2. User/Partner submits loan application
+3. Backend triggers scoring engine (evaluates base rules + transaction history)
+4. Scoring engine returns combined score
 5. Decision engine evaluates score
 6. Loan is created if approved
 7. Repayment schedule is generated
-8. User views loan and repayment details
+8. System fires webhook to partner (if B2B)
+9. User/Partner views loan and repayment details
 
 ---
 

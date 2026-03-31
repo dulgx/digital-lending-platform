@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, Numeric, String, Boolean
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, Numeric, String, Boolean, JSON
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 import enum
@@ -32,7 +32,7 @@ class LoanApplication(Base):
     # B2B fields
     is_b2b = Column(Boolean, default=False, nullable=False)
     # Storing arbitrary data for partners (like the customer's name, age, transactions)
-    customer_data = Column(JSONB, nullable=True)
+    customer_data = Column(JSON().with_variant(JSONB, "postgresql"), nullable=True)
 
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))

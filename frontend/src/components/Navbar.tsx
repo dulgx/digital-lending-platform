@@ -16,8 +16,8 @@ export default function Navbar() {
   const isHome = pathname === "/dashboard";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50">
-      <div className="max-w-md mx-auto px-4 pb-5">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom,16px)]">
+      <div className="max-w-md mx-auto px-4 pb-4">
         <div className="bg-white rounded-[28px] shadow-xl px-6 py-3 flex items-center justify-between">
           {/* Home */}
           <Link

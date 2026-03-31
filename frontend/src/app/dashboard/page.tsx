@@ -73,21 +73,21 @@ export default function DashboardPage() {
             </div>
             <span className="font-black text-black text-base tracking-wide">ЗЭЭЛ</span>
           </div>
-          <span className="text-black/50 font-semibold text-sm">03/26</span>
+          <span className="text-black/70 font-bold text-sm">03/26</span>
         </div>
 
-        <p className="text-black/60 text-sm font-medium mb-1">Нийт зээлийн дүн</p>
+        <p className="text-black/70 text-sm font-bold mb-1">Нийт зээлийн дүн</p>
         <p className="text-4xl font-black text-black tracking-tight">
           ₮{totalAmount.toLocaleString()}
         </p>
 
         <div className="flex items-end justify-between mt-5">
           <div>
-            <p className="text-black/50 text-xs mb-0.5">Нэр</p>
+            <p className="text-black/70 font-semibold text-xs mb-0.5">Нэр</p>
             <p className="font-black text-black text-sm">Миний данс</p>
           </div>
           <div className="text-right">
-            <p className="text-black/50 text-xs mb-0.5">Нийт зээл</p>
+            <p className="text-black/70 font-semibold text-xs mb-0.5">Нийт зээл</p>
             <p className="font-black text-black text-sm">{applications.length} хүсэлт</p>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Quick Actions ── */}
-      <div className="flex items-center justify-between px-2">
+      <div className="flex items-center justify-between">
         <Link href="/dashboard/apply" className="flex flex-col items-center gap-2">
           <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center shadow-md">
             <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
