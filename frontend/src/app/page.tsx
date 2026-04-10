@@ -16,12 +16,20 @@ export default function Home() {
           </div>
           <span className="font-black text-gray-900 text-lg tracking-tight">ZMN Fintech</span>
         </div>
-        <Link
-          href="/login"
-          className="text-sm font-semibold text-gray-700 bg-white/70 backdrop-blur-sm px-5 py-2 rounded-full hover:bg-white transition-all shadow-sm"
-        >
-          Нэвтрэх
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/register"
+            className="text-sm font-semibold text-gray-700 bg-white/70 backdrop-blur-sm px-5 py-2 rounded-full hover:bg-white transition-all shadow-sm"
+          >
+            Бүртгүүлэх
+          </Link>
+          <Link
+            href="/login"
+            className="text-sm font-semibold text-white bg-gray-900 px-5 py-2 rounded-full hover:bg-gray-700 transition-all shadow-sm"
+          >
+            Нэвтрэх
+          </Link>
+        </div>
       </nav>
 
       {/* Hero */}
@@ -32,8 +40,8 @@ export default function Home() {
         </div>
 
         <h1 className="text-5xl md:text-6xl font-black text-gray-900 tracking-tight leading-[1.1] mb-6">
-          Get Loans<br />
-          <span className="text-gray-500">in Minutes!</span>
+          Хэдхэн<br />
+          <span className="text-gray-500">минутад зээл!</span>
         </h1>
 
         <p className="text-gray-500 text-lg leading-relaxed mb-10 font-medium">
@@ -55,29 +63,23 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Preview pills */}
+        {/* Feature pills */}
         <div className="mt-14 flex flex-col gap-3 max-w-sm mx-auto">
-          <div className="flex items-center justify-between bg-purple-200/70 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span className="font-semibold text-gray-700">Нийт зээлийн дүн</span>
+          <div className="flex items-center gap-4 bg-purple-200/70 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-sm">
+            <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
             </div>
-            <span className="font-black text-gray-900 text-lg">₮74,526.30</span>
+            <span className="font-semibold text-gray-700 text-sm">Хэдхэн минутад шийдвэр гардаг автомат систем</span>
           </div>
-          <div className="flex items-center justify-between bg-green-200/70 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <span className="font-semibold text-gray-700">Сарын төлбөр</span>
+          <div className="flex items-center gap-4 bg-green-200/70 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-sm">
+            <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
             </div>
-            <span className="font-black text-gray-900 text-lg">₮1,245.30</span>
+            <span className="font-semibold text-gray-700 text-sm">Найдвартай, аюулгүй бүрэн онлайн процесс</span>
           </div>
         </div>
       </main>
