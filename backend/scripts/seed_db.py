@@ -12,8 +12,8 @@ from app.models.loan_application import LoanApplication, ApplicationStatus
 from app.core.security import hash_password
 
 # Mock Data Constants
-FIRST_NAMES = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "William", "Elizabeth", "David", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen"]
-LAST_NAMES = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin"]
+FIRST_NAMES = ["Батбаяр", "Энхбаяр", "Төмөрбаатар", "Ганбаатар", "Мөнхбаяр", "Оюунбаяр", "Наранцэцэг", "Цэцэгмаа", "Энхтуяа", "Сарантуяа", "Болормаа", "Номинчимэг", "Дөлгөөн", "Уянга", "Хулан", "Анхбаяр", "Содномдорж", "Баярмаа", "Энхжаргал", "Мөнхзул"]
+LAST_NAMES = ["Бат", "Ган", "Мөнх", "Энх", "Болд", "Дорж", "Пүрэв", "Цэрэн", "Нямаа", "Дамба", "Лхагва", "Сүрэн", "Гомбо", "Бямба", "Жамбал", "Лувсан", "Равдан", "Цэдэв", "Намдаг", "Очир"]
 
 def main():
     print("🚀 Initializing Database Seeding...")
@@ -50,7 +50,7 @@ def main():
         for _ in range(50):
             first_name = random.choice(FIRST_NAMES)
             last_name = random.choice(LAST_NAMES)
-            domain = random.choice(["gmail.com", "yahoo.com", "outlook.com", "digitalbank.io"])
+            domain = random.choice(["gmail.com", "yahoo.com", "outlook.com", "magicnet.mn", "mongol.net", "mcs.mn"])
             email = f"{first_name.lower()}.{last_name.lower()}{random.randint(10, 9999)}@{domain}"
             
             salary = float(random.randint(25000, 150000))

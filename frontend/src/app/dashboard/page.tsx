@@ -30,13 +30,18 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function DashboardPage() {
   const [applications, setApplications] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchApi("/loan/applications")
-      .then((data: any) => {
-        const sorted = (data || []).sort((a: any, b: any) => b.id - a.id);
+    Promise.all([
+      fetchApi("/loan/applications"),
+      fetchApi("/auth/me"),
+    ])
+      .then(([apps, me]) => {
+        const sorted = (apps || []).sort((a: any, b: any) => b.id - a.id);
         setApplications(sorted);
+        setUser(me);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -48,17 +53,20 @@ export default function DashboardPage() {
     (a) => a.status?.toUpperCase() === "PENDING" || a.status?.toUpperCase() === "REVIEW"
   );
 
+  const userInitial = user?.name ? user.name.charAt(0).toUpperCase() : "?";
+  const userName = user?.name ?? "Миний данс";
+
   return (
     <div className="space-y-6 animate-[slideUp_0.4s_ease-out]">
 
       {/* ── Header ── */}
       <header className="flex items-center justify-between pt-2">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Wallet</h1>
-          <p className="text-gray-400 text-xs font-medium">Сайн байна уу</p>
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Хэтэвч</h1>
+          <p className="text-gray-400 text-xs font-medium">Сайн байна уу, {user?.name?.split(" ")[0] ?? "та"}</p>
         </div>
         <div className="w-11 h-11 rounded-full bg-amber-200 flex items-center justify-center">
-          <span className="text-amber-800 font-black text-lg">М</span>
+          <span className="text-amber-800 font-black text-lg">{userInitial}</span>
         </div>
       </header>
 
@@ -73,7 +81,6 @@ export default function DashboardPage() {
             </div>
             <span className="font-black text-black text-base tracking-wide">ЗЭЭЛ</span>
           </div>
-          <span className="text-black/70 font-bold text-sm">03/26</span>
         </div>
 
         <p className="text-black/70 text-sm font-bold mb-1">Нийт зээлийн дүн</p>
@@ -84,10 +91,10 @@ export default function DashboardPage() {
         <div className="flex items-end justify-between mt-5">
           <div>
             <p className="text-black/70 font-semibold text-xs mb-0.5">Нэр</p>
-            <p className="font-black text-black text-sm">Миний данс</p>
+            <p className="font-black text-black text-sm">{userName}</p>
           </div>
           <div className="text-right">
-            <p className="text-black/70 font-semibold text-xs mb-0.5">Нийт зээл</p>
+            <p className="text-black/70 font-semibold text-xs mb-0.5">Нийт хүсэлт</p>
             <p className="font-black text-black text-sm">{applications.length} хүсэлт</p>
           </div>
         </div>
@@ -98,7 +105,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Quick Actions ── */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-around">
         <Link href="/dashboard/apply" className="flex flex-col items-center gap-2">
           <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center shadow-md">
             <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -108,39 +115,29 @@ export default function DashboardPage() {
           <span className="text-xs font-semibold text-gray-500">Хүсэлт</span>
         </Link>
 
-        <button className="flex flex-col items-center gap-2">
+        <Link href="/dashboard/apply" className="flex flex-col items-center gap-2">
           <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
             <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
-          <span className="text-xs font-semibold text-gray-500">Шилжүүлэх</span>
-        </button>
+          <span className="text-xs font-semibold text-gray-500">Маягт</span>
+        </Link>
 
-        <button className="flex flex-col items-center gap-2">
+        <Link href="/dashboard/loan" className="flex flex-col items-center gap-2">
           <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
             <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
           </div>
-          <span className="text-xs font-semibold text-gray-500">Илгээх</span>
-        </button>
-
-        <button className="flex flex-col items-center gap-2">
-          <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
-            <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
-          </div>
-          <span className="text-xs font-semibold text-gray-500">Дэлгэрэнгүй</span>
-        </button>
+          <span className="text-xs font-semibold text-gray-500">Статус</span>
+        </Link>
       </div>
 
-      {/* ── Spending by Category ── */}
+      {/* ── Stats ── */}
       <div>
         <h2 className="text-base font-black text-gray-900 mb-3">Зээлийн ангилал</h2>
         <div className="grid grid-cols-2 gap-3">
-          {/* Teal card */}
           <div className="bg-[#C8F5F0] rounded-[24px] p-4 relative overflow-hidden">
             <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center mb-8">
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -152,7 +149,6 @@ export default function DashboardPage() {
             <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-black/5 rounded-full" />
           </div>
 
-          {/* Green card */}
           <div className="bg-[#DAFADE] rounded-[24px] p-4 relative overflow-hidden">
             <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center mb-8">
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -170,7 +166,6 @@ export default function DashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-black text-gray-900">Миний зээлүүд</h2>
-          <button className="text-sm font-semibold text-gray-400">Бүгдийг харах</button>
         </div>
 
         {loading ? (
